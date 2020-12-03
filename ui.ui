@@ -94,7 +94,7 @@
     <item>
      <widget class="QTabWidget" name="viewMode">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="timetable">
        <property name="enabled">
@@ -110,7 +110,7 @@
         <item>
          <widget class="QPushButton" name="pushButton">
           <property name="text">
-           <string>PushButton</string>
+           <string>Ок</string>
           </property>
          </widget>
         </item>
@@ -130,7 +130,7 @@
         <item>
          <widget class="QPushButton" name="pushButton_2">
           <property name="text">
-           <string>PushButton</string>
+           <string>Ок</string>
           </property>
          </widget>
         </item>
@@ -144,7 +144,7 @@
         <item>
          <widget class="QTabWidget" name="accountsTable">
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="sAccounts">
            <attribute name="title">
@@ -213,6 +213,19 @@
             </item>
            </layout>
           </widget>
+          <widget class="QWidget" name="classes">
+           <attribute name="title">
+            <string>Классы</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="QComboBox" name="comboBox"/>
+            </item>
+            <item>
+             <widget class="QTableWidget" name="tableWidget"/>
+            </item>
+           </layout>
+          </widget>
           <widget class="QWidget" name="aAccounts">
            <attribute name="title">
             <string>Администраторы</string>
@@ -257,7 +270,7 @@
           </property>
           <widget class="QWidget" name="addAcc">
            <attribute name="title">
-            <string>Добавить</string>
+            <string>Пакетное добавление</string>
            </attribute>
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
@@ -274,16 +287,26 @@
           </widget>
           <widget class="QWidget" name="delAcc">
            <attribute name="title">
-            <string>Удалить</string>
+            <string>Пакетное удаление</string>
            </attribute>
            <layout class="QHBoxLayout" name="horizontalLayout_8">
             <item>
-             <widget class="QTextEdit" name="delField"/>
+             <widget class="QTextEdit" name="delField">
+              <property name="documentTitle">
+               <string/>
+              </property>
+              <property name="markdown">
+               <string/>
+              </property>
+              <property name="placeholderText">
+               <string>Введите id или имя...</string>
+              </property>
+             </widget>
             </item>
             <item>
              <widget class="QPushButton" name="okButton_2">
               <property name="text">
-               <string>Ok</string>
+               <string>Ок</string>
               </property>
              </widget>
             </item>
@@ -411,7 +434,7 @@
      <x>0</x>
      <y>0</y>
      <width>958</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>

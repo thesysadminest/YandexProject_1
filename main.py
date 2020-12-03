@@ -1,7 +1,7 @@
 import sqlite3
 import sys
 import datetime
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QLCDNumber, QLabel, QMainWindow, QDialog
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QLabel, QMainWindow, QDialog
 from PyQt5 import uic
 
 
@@ -33,16 +33,19 @@ class LoginDialog(QDialog):
             role = login[0]
         except IndexError:
             return self.tryAgain()
-
+        result = []
         if role.lower() == 'a':
             result = self.cur.execute(
-                """SELECT password FROM admin WHERE login = ?""", (login, )).fetchall()
+                """SELECT password FROM admin WHERE login = ?""", (login, )).fetchone()
         elif role.lower() == 't':
             result = self.cur.execute(
-                """SELECT password FROM teacher WHERE login = ?""", (login, )).fetchall()
+                """SELECT password FROM teacher WHERE login = ?""", (login, )).fetchone()
         elif role.lower() == 's':
             result = self.cur.execute(
-                """SELECT password FROM student WHERE login = ?""", (login, )).fetchall()
+                """SELECT password FROM student WHERE login = ?""", (login,)).fetchone()
+
+        if result and result[0] == password:
+            self.startMainProgram()
         else:
             self.tryAgain()
 
