@@ -105,7 +105,87 @@
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QTableWidget" name="timetableTable"/>
+         <widget class="QToolBox" name="toolBox_2">
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <widget class="QWidget" name="mon">
+           <attribute name="label">
+            <string>Понедельник</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_7">
+            <item>
+             <widget class="QTableWidget" name="tableWidget_2"/>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tue">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>837</width>
+             <height>308</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Вторник</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <item>
+             <widget class="QTableWidget" name="tableWidget_3"/>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="wed">
+           <attribute name="label">
+            <string>Среда</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_12">
+            <item>
+             <widget class="QTableWidget" name="tableWidget_4"/>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="thu">
+           <attribute name="label">
+            <string>Четверг</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_9">
+            <item>
+             <widget class="QTableWidget" name="tableWidget_5"/>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="fri">
+           <attribute name="label">
+            <string>Пятница</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_10">
+            <item>
+             <widget class="QTableWidget" name="tableWidget_6"/>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="sat">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>837</width>
+             <height>308</height>
+            </rect>
+           </property>
+           <attribute name="label">
+            <string>Суббота</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_11">
+            <item>
+             <widget class="QTableWidget" name="tableWidget_7"/>
+            </item>
+           </layout>
+          </widget>
+         </widget>
         </item>
         <item>
          <widget class="QPushButton" name="pushButton">
@@ -219,9 +299,6 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
-             <widget class="QComboBox" name="comboBox"/>
-            </item>
-            <item>
              <widget class="QTableWidget" name="tableWidget"/>
             </item>
            </layout>
@@ -257,7 +334,7 @@
         <item>
          <widget class="QTabWidget" name="control">
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <property name="documentMode">
            <bool>false</bool>
@@ -268,30 +345,57 @@
           <property name="movable">
            <bool>false</bool>
           </property>
-          <widget class="QWidget" name="addAcc">
+          <widget class="QWidget" name="bAddAcc">
            <attribute name="title">
             <string>Пакетное добавление</string>
            </attribute>
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
-             <widget class="QTextEdit" name="addField"/>
-            </item>
-            <item>
-             <widget class="QPushButton" name="okButton">
-              <property name="text">
-               <string>Ok</string>
+             <widget class="QTextEdit" name="bAddField">
+              <property name="placeholderText">
+               <string>Формат ввода: &lt;ФИО&gt; &lt;год рождения&gt; &lt;предмет (только для учителя)&gt; &lt;классы&gt;</string>
               </property>
              </widget>
             </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_5">
+              <item>
+               <widget class="QComboBox" name="selectAAccType">
+                <item>
+                 <property name="text">
+                  <string>Ученик</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Учитель</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Администратор</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="okButton_bAdd">
+                <property name="text">
+                 <string>Ок</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="delAcc">
+          <widget class="QWidget" name="bDelAcc">
            <attribute name="title">
             <string>Пакетное удаление</string>
            </attribute>
            <layout class="QHBoxLayout" name="horizontalLayout_8">
             <item>
-             <widget class="QTextEdit" name="delField">
+             <widget class="QTextEdit" name="bDelField">
               <property name="documentTitle">
                <string/>
               </property>
@@ -299,16 +403,45 @@
                <string/>
               </property>
               <property name="placeholderText">
-               <string>Введите id или имя...</string>
+               <string>Формат ввода: &lt;id&gt; или &lt;ФИО&gt;</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="okButton_2">
-              <property name="text">
-               <string>Ок</string>
-              </property>
-             </widget>
+             <layout class="QVBoxLayout" name="verticalLayout_6">
+              <item>
+               <widget class="QComboBox" name="selectDAccType">
+                <property name="currentText">
+                 <string>Ученик</string>
+                </property>
+                <property name="placeholderText">
+                 <string/>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>Ученик</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Учитель</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Администратор</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="okButton_bDel">
+                <property name="text">
+                 <string>Ок</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>

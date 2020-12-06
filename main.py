@@ -1,7 +1,8 @@
 import sqlite3
 import sys
 import datetime
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QLabel, QMainWindow, QDialog
+#from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QLabel, QMainWindow, QDialog
+from PyQt5.QtWidgets import *
 from PyQt5 import uic
 
 
@@ -12,8 +13,76 @@ class MainProgram(QMainWindow):
         self.con = con
         self.cur = cur
         self.login = login
+        dt = datetime.date.today()
+        self.dateChoose.setDate(dt)
 
-        print("dfdfadfg")
+        self.okButton_bAdd.clicked.connect(self.batchAdd)
+        self.okButton_bDel.clicked.connect(self.batchDel)
+
+    def batchAdd(self):
+        from additional import key
+        import random
+        text = self.bAddField.toPlainText().split('\n')
+        role = self.selectAAccType.currentText()
+        self.bAddField.setText('')
+
+        for i in text:
+            a = i.split()
+            name = ' '.join(a[:3])
+            if role == 'Ученик':
+                login = 's'
+            elif role == 'Учитель':
+                login = 't'
+            else:
+                login = 'a'
+            login += a[3][2:] + '_' + key[a[0][0].lower()] + \
+                key[a[1][0].lower()] + key[a[2][0].lower()]
+
+            try:
+                if role == 'Ученик':
+                    classes = a[4].lower()
+                elif role == 'Учитель':
+                    classes = ' '.join(
+                        sorted(list(set([i.lower() for i in a[5:]]))))
+            except IndexError:
+                if role != 'Администратор':
+                    pass  # todo: сообщение об ошибке
+            pwd = str(random.randint(100000, 999999))
+
+            if role == 'Ученик':
+                n = 0
+                while True:
+                    try:
+                        self.cur.execute(
+                            'INSERT INTO student (name, class, login, password) VALUES (?, ?, ?, ?)', (name, classes, login, pwd))
+                        flag = True
+                    except sqlite3.IntegrityError:
+                        flag = False
+                        n += 1
+                        login = login[:7] + str(n)
+                    if flag:
+                        break
+            # elif role == 'Учитель':
+            #     self.cur.execute(
+            #         'INSERT INTO teacher (name, classes, lesson, login, password) VALUES (?, ?, ?, ?, ?)', (name, classes, lesson, login, pwd))
+            else:
+                n = 0
+                while True:
+                    try:
+                        self.cur.execute(
+                            'INSERT INTO admin (name, login, password) VALUES (?, ?, ?)', (name, login, pwd))
+                        flag = True
+                    except sqlite3.IntegrityError:
+                        flag = False
+                        n += 1
+                        login = login[:7] + str(n)
+                    if flag:
+                        break
+
+            self.con.commit()
+
+    def batchDel(self):
+        pass
 
 
 class LoginDialog(QDialog):
@@ -48,8 +117,6 @@ class LoginDialog(QDialog):
             self.startMainProgram()
         else:
             self.tryAgain()
-
-        print(result)
 
     def tryAgain(self):
         global login_dial
