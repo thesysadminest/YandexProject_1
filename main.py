@@ -15,17 +15,21 @@ class MainProgram(QMainWindow):
         self.login = login
         dt = datetime.date.today()
         self.dateChoose.setDate(dt)
-
+        self.pAddBar.hide()
+        self.pDelBar.hide()
         self.okButton_bAdd.clicked.connect(self.batchAdd)
         self.okButton_bDel.clicked.connect(self.batchDel)
 
-    def batchAdd(self):
+    def batchAdd(self):  # batch adding students, (teachers) and admins into DB
         from additional import key
         import random
-        text = self.bAddField.toPlainText().split('\n')
+        text = self.bAddField.toPlainText().rstrip('\n').split('\n')
         role = self.selectAAccType.currentText()
-        self.bAddField.setText('')
 
+        self.pAddBar.setMaximum(len(text))
+        self.pAddBar.setValue(0)
+        value = 0
+        self.pAddBar.show()
         for i in text:
             a = i.split()
             name = ' '.join(a[:3])
@@ -79,10 +83,37 @@ class MainProgram(QMainWindow):
                     if flag:
                         break
 
-            self.con.commit()
+            value += 1
+            self.pAddBar.setValue(value)
+            self.pAddBar.update()
+
+        self.con.commit()
+        self.bAddField.setText('')
+        self.pAddBar.hide()
 
     def batchDel(self):
-        pass
+        text = self.bDelField.toPlainText().rstrip('\n').split('\n')
+        self.pDelBar.setMaximum(len(text))
+        self.pDelBar.setValue(0)
+        self.pDelBar.show()
+        value = 0
+
+        for i in text:
+            if i[0] == "s":
+                self.cur.execute("DELETE from student where login = ?", (i,))
+            elif i[0] == 't':
+                self.cur.execute("DELETE from teacher where login = ?", (i,))
+            elif i[0] == "a":
+                self.cur.execute("DELETE from admin where login = ?", (i,))
+            else:
+                pass  # todo: ошибка
+
+            value += 1
+            self.pDelBar.setValue(value)
+
+        self.con.commit()
+        self.bDelField.setText('')
+        self.pDelBar.hide()
 
 
 class LoginDialog(QDialog):
