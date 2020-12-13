@@ -20,7 +20,7 @@ class MainProgram(QMainWindow):
         self.okButton_bAdd.clicked.connect(self.batchAdd)
         self.okButton_bDel.clicked.connect(self.batchDel)
 
-    def batchAdd(self):  # batch adding students, (teachers) and admins into DB
+    def batchAdd(self):  # batch adding students, teachers and admins into DB
         from additional import key
         import random
         text = self.bAddField.toPlainText().rstrip('\n').split('\n')
@@ -46,10 +46,29 @@ class MainProgram(QMainWindow):
                 if role == 'Ученик':
                     classes = a[4].lower()
                 elif role == 'Учитель':
-                    classes = ' '.join(
-                        sorted(list(set([i.lower() for i in a[5:]]))))
+                    classes = set()
+                    lessons = set()
+                    for temp in a[4:]:
+                        isclass = False
+                        for cr in temp:
+                            if '0' < cr <= '9':
+                                isclass = True
+                                break
+                        if isclass:
+                            classes.add(temp)
+                        else:
+                            lessons.add(temp.lower())
+
+                    classes = [[int(i[:-1]), i[-1]] for i in classes]
+                    classes.sort()
+                    classes = [str(i[0]) + i[1] for i in classes]
+                    classes = '; '.join(classes)
+                    lessons = '; '.join(sorted(list(lessons)))
+                    if classes == '' or lessons == '':
+                        break  # todo: ошибка
             except IndexError:
                 if role != 'Администратор':
+                    break
                     pass  # todo: сообщение об ошибке
             pwd = str(random.randint(100000, 999999))
 
@@ -66,9 +85,19 @@ class MainProgram(QMainWindow):
                         login = login[:7] + str(n)
                     if flag:
                         break
-            # elif role == 'Учитель':
-            #     self.cur.execute(
-            #         'INSERT INTO teacher (name, classes, lesson, login, password) VALUES (?, ?, ?, ?, ?)', (name, classes, lesson, login, pwd))
+            elif role == 'Учитель':
+                n = 0
+                while True:
+                    try:
+                        self.cur.execute(
+                            'INSERT INTO teacher (name, classes, lesson, login, password) VALUES (?, ?, ?, ?, ?)', (name, classes, lessons, login, pwd))
+                        flag = True
+                    except sqlite3.IntegrityError:
+                        flag = False
+                        n += 1
+                        login = login[:7] + str(n)
+                    if flag:
+                        break
             else:
                 n = 0
                 while True:
@@ -91,7 +120,7 @@ class MainProgram(QMainWindow):
         self.bAddField.setText('')
         self.pAddBar.hide()
 
-    def batchDel(self):
+    def batchDel(self):  # batch deleting students, teachers and admins from DB
         text = self.bDelField.toPlainText().rstrip('\n').split('\n')
         self.pDelBar.setMaximum(len(text))
         self.pDelBar.setValue(0)
