@@ -13,12 +13,52 @@ class MainProgram(QMainWindow):
         self.con = con
         self.cur = cur
         self.login = login
-        dt = datetime.date.today()
-        self.dateChoose.setDate(dt)
+
+        self.accsLoaded = False
+        self.teachersLoaded, self.studentsLoaded, self.adminsLoaded = [], [], []
+        self.temp_teachersLoaded, self.temp_studentsLoaded, self.temp_adminsLoaded = [], [], []
+
+        self.dateChoose.setDate(datetime.date.today())
+        self.accProgBar.hide()
         self.pAddBar.hide()
         self.pDelBar.hide()
         self.okButton_bAdd.clicked.connect(self.batchAdd)
         self.okButton_bDel.clicked.connect(self.batchDel)
+
+        self.loadAccs()  # todo: потом убрать эту строчку
+
+    def loadAccs(self):
+
+        self.studentsLoaded = self.cur.execute(
+            "SELECT * FROM student ORDER BY class, class_letter, name").fetchall()
+        self.teachersLoaded = self.cur.execute(
+            "SELECT * FROM teacher ORDER BY name").fetchall()
+        self.adminsLoaded = self.cur.execute(
+            "SELECT * FROM admin ORDER BY name").fetchall()
+
+        self.sacTable.setRowCount(len(self.studentsLoaded))
+        self.tacTable.setRowCount(len(self.teachersLoaded))
+        self.aacTable.setRowCount(len(self.adminsLoaded))
+
+        for i in range(len(self.studentsLoaded)):
+            for j in range(1, len(self.studentsLoaded[i])):
+                self.sacTable.setItem(
+                    i, j - 1, QTableWidgetItem(str(self.studentsLoaded[i][j])))
+        self.sacTable.resizeColumnsToContents()
+
+        for i in range(len(self.teachersLoaded)):
+            for j in range(1, len(self.teachersLoaded[i])):
+                self.tacTable.setItem(
+                    i, j - 1, QTableWidgetItem(self.teachersLoaded[i][j]))
+        self.tacTable.resizeColumnsToContents()
+
+        for i in range(len(self.adminsLoaded)):
+            for j in range(1, len(self.adminsLoaded[i])):
+                self.aacTable.setItem(
+                    i, j - 1, QTableWidgetItem(self.adminsLoaded[i][j]))
+        self.aacTable.resizeColumnsToContents()
+
+        self.accsLoaded = True
 
     def batchAdd(self):  # batch adding students, teachers and admins into DB
         from additional import key
@@ -44,28 +84,21 @@ class MainProgram(QMainWindow):
 
             try:
                 if role == 'Ученик':
-                    classes = a[4].lower()
+                    classes = int(a[4][:-1])
+                    class_letter = a[4][-1]
                 elif role == 'Учитель':
                     classes = set()
-                    lessons = set()
                     for temp in a[4:]:
-                        isclass = False
-                        for cr in temp:
-                            if '0' < cr <= '9':
-                                isclass = True
-                                break
-                        if isclass:
-                            classes.add(temp)
-                        else:
-                            lessons.add(temp.lower())
+                        classes.add(temp)
 
                     classes = [[int(i[:-1]), i[-1]] for i in classes]
                     classes.sort()
                     classes = [str(i[0]) + i[1] for i in classes]
                     classes = '; '.join(classes)
-                    lessons = '; '.join(sorted(list(lessons)))
-                    if classes == '' or lessons == '':
+
+                    if classes == '':
                         break  # todo: ошибка
+
             except IndexError:
                 if role != 'Администратор':
                     break
@@ -77,7 +110,7 @@ class MainProgram(QMainWindow):
                 while True:
                     try:
                         self.cur.execute(
-                            'INSERT INTO student (name, class, login, password) VALUES (?, ?, ?, ?)', (name, classes, login, pwd))
+                            'INSERT INTO student (name, class, class_letter, login, password) VALUES (?, ?, ?, ?, ?)', (name, classes, class_letter, login, pwd))
                         flag = True
                     except sqlite3.IntegrityError:
                         flag = False
@@ -90,7 +123,7 @@ class MainProgram(QMainWindow):
                 while True:
                     try:
                         self.cur.execute(
-                            'INSERT INTO teacher (name, classes, lesson, login, password) VALUES (?, ?, ?, ?, ?)', (name, classes, lessons, login, pwd))
+                            'INSERT INTO teacher (name, classes, login, password) VALUES (?, ?, ?, ?)', (name, classes, login, pwd))
                         flag = True
                     except sqlite3.IntegrityError:
                         flag = False
@@ -187,6 +220,7 @@ class LoginDialog(QDialog):
         global main_prog
         main_prog = MainProgram(self.login.text(), self.con, self.cur)
         main_prog.show()
+        main_prog.loadAccs()
 
 
 if __name__ == '__main__':

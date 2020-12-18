@@ -132,7 +132,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>83</width>
+             <width>96</width>
              <height>82</height>
             </rect>
            </property>
@@ -150,7 +150,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>83</width>
+             <width>96</width>
              <height>82</height>
             </rect>
            </property>
@@ -168,7 +168,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>83</width>
+             <width>96</width>
              <height>82</height>
             </rect>
            </property>
@@ -186,7 +186,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>83</width>
+             <width>96</width>
              <height>82</height>
             </rect>
            </property>
@@ -204,7 +204,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>83</width>
+             <width>96</width>
              <height>82</height>
             </rect>
            </property>
@@ -254,114 +254,154 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QTabWidget" name="accountsTable">
-          <property name="currentIndex">
-           <number>2</number>
+         <layout class="QHBoxLayout" name="horizontalLayout_11">
+          <property name="rightMargin">
+           <number>0</number>
           </property>
-          <widget class="QWidget" name="sAccounts">
-           <attribute name="title">
-            <string>Ученики</string>
-           </attribute>
-           <layout class="QHBoxLayout" name="horizontalLayout_7">
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QTabWidget" name="accountsTable">
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <widget class="QWidget" name="sAccounts">
+             <attribute name="title">
+              <string>Ученики</string>
+             </attribute>
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <item>
+               <widget class="QTableWidget" name="sacTable">
+                <column>
+                 <property name="text">
+                  <string>Имя</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Класс</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Буква</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Логин</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Пароль</string>
+                 </property>
+                </column>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="tAccounts">
+             <attribute name="title">
+              <string>Учителя</string>
+             </attribute>
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <item>
+               <widget class="QTableWidget" name="tacTable">
+                <column>
+                 <property name="text">
+                  <string>Имя</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Классы</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Логин</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Пароль</string>
+                 </property>
+                </column>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="classes">
+             <attribute name="title">
+              <string>Классы</string>
+             </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <item>
+               <widget class="QTableWidget" name="tableWidget"/>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="aAccounts">
+             <attribute name="title">
+              <string>Администраторы</string>
+             </attribute>
+             <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <item>
+               <widget class="QTableWidget" name="aacTable">
+                <column>
+                 <property name="text">
+                  <string>Имя</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Логин</string>
+                 </property>
+                </column>
+                <column>
+                 <property name="text">
+                  <string>Пароль</string>
+                 </property>
+                </column>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_13">
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
             <item>
-             <widget class="QTableWidget" name="sacTable">
-              <column>
-               <property name="text">
-                <string>Имя</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Класс</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Логин</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Пароль</string>
-               </property>
-              </column>
+             <widget class="QPushButton" name="okAccsBtn">
+              <property name="text">
+               <string>Применить</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QProgressBar" name="accProgBar">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="value">
+               <number>0</number>
+              </property>
+              <property name="textVisible">
+               <bool>false</bool>
+              </property>
              </widget>
             </item>
            </layout>
-          </widget>
-          <widget class="QWidget" name="tAccounts">
-           <attribute name="title">
-            <string>Учителя</string>
-           </attribute>
-           <layout class="QHBoxLayout" name="horizontalLayout_6">
-            <item>
-             <widget class="QTableWidget" name="tacTable">
-              <column>
-               <property name="text">
-                <string>Имя</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Классы</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Предмет</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Логин</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Пароль</string>
-               </property>
-              </column>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="classes">
-           <attribute name="title">
-            <string>Классы</string>
-           </attribute>
-           <layout class="QVBoxLayout" name="verticalLayout_4">
-            <item>
-             <widget class="QTableWidget" name="tableWidget"/>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="aAccounts">
-           <attribute name="title">
-            <string>Администраторы</string>
-           </attribute>
-           <layout class="QHBoxLayout" name="horizontalLayout_5">
-            <item>
-             <widget class="QTableWidget" name="aacTable">
-              <column>
-               <property name="text">
-                <string>Имя</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Логин</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Пароль</string>
-               </property>
-              </column>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </widget>
+          </item>
+         </layout>
         </item>
         <item>
          <widget class="QTabWidget" name="control">
@@ -385,7 +425,7 @@
             <item>
              <widget class="QTextEdit" name="bAddField">
               <property name="placeholderText">
-               <string>Формат ввода: &lt;ФИО&gt; &lt;год рождения&gt; &lt;предмет (только для учителя)&gt; &lt;классы&gt;</string>
+               <string>Формат ввода: &lt;ФИО&gt; &lt;год рождения&gt; &lt;классы&gt;</string>
               </property>
              </widget>
             </item>
