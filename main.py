@@ -1,7 +1,7 @@
 import sqlite3
 import sys
 import datetime
-#from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QLabel, QMainWindow, QDialog
+# from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QLabel, QMainWindow, QDialog
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
 
@@ -16,49 +16,117 @@ class MainProgram(QMainWindow):
 
         self.accsLoaded = False
         self.teachersLoaded, self.studentsLoaded, self.adminsLoaded = [], [], []
-        self.temp_teachersLoaded, self.temp_studentsLoaded, self.temp_adminsLoaded = [], [], []
-
         self.dateChoose.setDate(datetime.date.today())
-        self.accProgBar.hide()
+        self.sacTable.itemChanged.connect(self.enable_changeAccsInfo_buttons)
+        self.tacTable.itemChanged.connect(self.enable_changeAccsInfo_buttons)
+        self.aacTable.itemChanged.connect(self.enable_changeAccsInfo_buttons)
+
+        self.okAccsBtn.clicked.connect(self.changeAccsInfo)  # accs info work
+        self.deAccsBtn.clicked.connect(self.loadAccs)
+        self.okButton_bAdd.clicked.connect(self.batchAdd)  # batchAdd
         self.pAddBar.hide()
+        self.bAddField.textChanged.connect(self.enable_batchAdd_buttons)
+        self.okButton_bDel.clicked.connect(self.batchDel)  # batchDel
         self.pDelBar.hide()
-        self.okButton_bAdd.clicked.connect(self.batchAdd)
-        self.okButton_bDel.clicked.connect(self.batchDel)
+        def temp_func(): return self.okButton_bDel.setEnabled(True)
+        self.bDelField.textChanged.connect(temp_func)
 
         self.loadAccs()  # todo: потом убрать эту строчку
+        # a = QTextEdit(self)
+        # a.
 
-    def loadAccs(self):
-
-        self.studentsLoaded = self.cur.execute(
-            "SELECT * FROM student ORDER BY class, class_letter, name").fetchall()
-        self.teachersLoaded = self.cur.execute(
-            "SELECT * FROM teacher ORDER BY name").fetchall()
-        self.adminsLoaded = self.cur.execute(
-            "SELECT * FROM admin ORDER BY name").fetchall()
+    def loadAccs(self):  # loading accounts into tables (for admin)
+        if not self.accsLoaded:
+            self.studentsLoaded = self.cur.execute(
+                "SELECT * FROM student ORDER BY class, class_letter, name").fetchall()
+            self.teachersLoaded = self.cur.execute(
+                "SELECT * FROM teacher ORDER BY name").fetchall()
+            self.adminsLoaded = self.cur.execute(
+                "SELECT * FROM admin ORDER BY name").fetchall()
 
         self.sacTable.setRowCount(len(self.studentsLoaded))
         self.tacTable.setRowCount(len(self.teachersLoaded))
         self.aacTable.setRowCount(len(self.adminsLoaded))
 
         for i in range(len(self.studentsLoaded)):
-            for j in range(1, len(self.studentsLoaded[i])):
+            for j in range(6):
                 self.sacTable.setItem(
-                    i, j - 1, QTableWidgetItem(str(self.studentsLoaded[i][j])))
+                    i, j, QTableWidgetItem(str(self.studentsLoaded[i][j])))
         self.sacTable.resizeColumnsToContents()
 
         for i in range(len(self.teachersLoaded)):
-            for j in range(1, len(self.teachersLoaded[i])):
+            for j in range(5):
                 self.tacTable.setItem(
-                    i, j - 1, QTableWidgetItem(self.teachersLoaded[i][j]))
+                    i, j, QTableWidgetItem(str(self.teachersLoaded[i][j])))
         self.tacTable.resizeColumnsToContents()
 
         for i in range(len(self.adminsLoaded)):
-            for j in range(1, len(self.adminsLoaded[i])):
+            for j in range(4):
                 self.aacTable.setItem(
-                    i, j - 1, QTableWidgetItem(self.adminsLoaded[i][j]))
+                    i, j, QTableWidgetItem(str(self.adminsLoaded[i][j])))
         self.aacTable.resizeColumnsToContents()
 
+        self.okAccsBtn.setDisabled(True)
+        self.deAccsBtn.setDisabled(True)
         self.accsLoaded = True
+
+    # enables buttons for change accs information
+    def enable_changeAccsInfo_buttons(self):
+
+        self.okAccsBtn.setEnabled(True)
+        self.deAccsBtn.setEnabled(True)
+
+    def changeAccsInfo(self):  # changing accounts information
+        for i in range(self.sacTable.rowCount()):
+            temp = tuple()
+            for j in range(6):
+                if j == 0 or j == 2:
+                    temp += (int(self.sacTable.item(i, j).text()),)
+                else:
+                    temp += (self.sacTable.item(i, j).text(),)
+
+            if (temp != self.studentsLoaded[i]):
+                print(temp)
+                call = f'''UPDATE student\n SET name = "{temp[1]}", class = {temp[2]}, class_letter = "{temp[3]}", login = "{temp[4]}", password = "{temp[5]}"\n WHERE id = {temp[0]}'''
+                self.cur.execute(call)
+                self.studentsLoaded[i] = temp
+
+        for i in range(self.tacTable.rowCount()):
+            temp = tuple()
+            for j in range(5):
+                if j == 0:
+                    temp += (int(self.tacTable.item(i, j).text()),)
+                else:
+                    temp += (self.tacTable.item(i, j).text(),)
+
+            if (temp != self.teachersLoaded[i]):
+                print(temp)
+                call = f'''UPDATE teacher\n SET name = "{temp[1]}", classes = "{temp[2]}", login = "{temp[3]}", password = "{temp[4]}"\n WHERE id = {temp[0]}'''
+                self.cur.execute(call)
+                self.teachersLoaded[i] = temp
+
+        for i in range(self.aacTable.rowCount()):
+            temp = tuple()
+            for j in range(4):
+                if j == 0:
+                    temp += (int(self.aacTable.item(i, j).text()),)
+                else:
+                    temp += (self.aacTable.item(i, j).text(),)
+
+            if (temp != self.adminsLoaded[i]):
+                print(temp)
+                call = f'''UPDATE admin\n SET name = "{temp[1]}", login = "{temp[2]}", password = "{temp[3]}"\n WHERE id = {temp[0]}'''
+                self.cur.execute(call)
+                self.adminsLoaded[i] = temp
+
+        self.con.commit()
+        self.okAccsBtn.setDisabled(True)
+        self.deAccsBtn.setDisabled(True)
+
+    # enables buttons for batch accounts add
+    def enable_batchAdd_buttons(self):
+        self.selectAAccType.setEnabled(True)
+        self.okButton_bAdd.setEnabled(True)
 
     def batchAdd(self):  # batch adding students, teachers and admins into DB
         from additional import key
@@ -66,9 +134,12 @@ class MainProgram(QMainWindow):
         text = self.bAddField.toPlainText().rstrip('\n').split('\n')
         role = self.selectAAccType.currentText()
 
+        if role == '---':
+            return 0  # todo: ошибка
+
         self.pAddBar.setMaximum(len(text))
         self.pAddBar.setValue(0)
-        value = 0
+        progressBar_value = 0
         self.pAddBar.show()
         for i in text:
             a = i.split()
@@ -118,6 +189,7 @@ class MainProgram(QMainWindow):
                         login = login[:7] + str(n)
                     if flag:
                         break
+
             elif role == 'Учитель':
                 n = 0
                 while True:
@@ -131,6 +203,7 @@ class MainProgram(QMainWindow):
                         login = login[:7] + str(n)
                     if flag:
                         break
+
             else:
                 n = 0
                 while True:
@@ -145,20 +218,22 @@ class MainProgram(QMainWindow):
                     if flag:
                         break
 
-            value += 1
-            self.pAddBar.setValue(value)
+            progressBar_value += 1
+            self.pAddBar.setValue(progressBar_value)
             self.pAddBar.update()
 
         self.con.commit()
         self.bAddField.setText('')
         self.pAddBar.hide()
+        self.selectAAccType.setDisabled(True)
+        self.okButton_bAdd.setDisabled(True)
 
     def batchDel(self):  # batch deleting students, teachers and admins from DB
         text = self.bDelField.toPlainText().rstrip('\n').split('\n')
         self.pDelBar.setMaximum(len(text))
         self.pDelBar.setValue(0)
         self.pDelBar.show()
-        value = 0
+        progressBar_value = 0
 
         for i in text:
             if i[0] == "s":
@@ -170,12 +245,13 @@ class MainProgram(QMainWindow):
             else:
                 pass  # todo: ошибка
 
-            value += 1
-            self.pDelBar.setValue(value)
+            progressBar_value += 1
+            self.pDelBar.setValue(progressBar_value)
 
         self.con.commit()
         self.bDelField.setText('')
         self.pDelBar.hide()
+        self.okButton_bDel.setDisabled(True)
 
 
 class LoginDialog(QDialog):
