@@ -17,23 +17,36 @@ class MainProgram(QMainWindow):
         self.accsLoaded = False
         self.teachersLoaded, self.studentsLoaded, self.adminsLoaded = [], [], []
         self.dateChoose.setDate(datetime.date.today())
-        self.sacTable.itemChanged.connect(self.enable_changeAccsInfo_buttons)
+
+        self.sacTable.itemChanged.connect(
+            self.enable_changeAccsInfo_buttons)  # table with accounts
         self.tacTable.itemChanged.connect(self.enable_changeAccsInfo_buttons)
         self.aacTable.itemChanged.connect(self.enable_changeAccsInfo_buttons)
 
-        self.okAccsBtn.clicked.connect(self.changeAccsInfo)  # accs info work
+        self.okAccsBtn.clicked.connect(self.changeAccsInfo)  # accs info change
         self.deAccsBtn.clicked.connect(self.loadAccs)
+
         self.okButton_bAdd.clicked.connect(self.batchAdd)  # batchAdd
         self.pAddBar.hide()
-        self.bAddField.textChanged.connect(self.enable_batchAdd_buttons)
+        self.bAddField.textChanged.connect(self.control_batchAdd_buttons)
+
         self.okButton_bDel.clicked.connect(self.batchDel)  # batchDel
         self.pDelBar.hide()
-        def temp_func(): return self.okButton_bDel.setEnabled(True)
-        self.bDelField.textChanged.connect(temp_func)
+        self.bDelField.textChanged.connect(self.control_batchDel_buttons)
+
+        self.changePasswordButton.clicked.connect(
+            self.changePassword)  # password change
+        self.oldPassword.textChanged.connect(
+            self.control_changePassword_button)
+        self.newPassword1.textChanged.connect(
+            self.control_changePassword_button)
+        self.newPassword2.textChanged.connect(
+            self.control_changePassword_button)
 
         self.loadAccs()  # todo: потом убрать эту строчку
+
         # a = QTextEdit(self)
-        # a.
+        # a.text
 
     def loadAccs(self):  # loading accounts into tables (for admin)
         if not self.accsLoaded:
@@ -86,7 +99,6 @@ class MainProgram(QMainWindow):
                     temp += (self.sacTable.item(i, j).text(),)
 
             if (temp != self.studentsLoaded[i]):
-                print(temp)
                 call = f'''UPDATE student\n SET name = "{temp[1]}", class = {temp[2]}, class_letter = "{temp[3]}", login = "{temp[4]}", password = "{temp[5]}"\n WHERE id = {temp[0]}'''
                 self.cur.execute(call)
                 self.studentsLoaded[i] = temp
@@ -100,7 +112,6 @@ class MainProgram(QMainWindow):
                     temp += (self.tacTable.item(i, j).text(),)
 
             if (temp != self.teachersLoaded[i]):
-                print(temp)
                 call = f'''UPDATE teacher\n SET name = "{temp[1]}", classes = "{temp[2]}", login = "{temp[3]}", password = "{temp[4]}"\n WHERE id = {temp[0]}'''
                 self.cur.execute(call)
                 self.teachersLoaded[i] = temp
@@ -114,7 +125,6 @@ class MainProgram(QMainWindow):
                     temp += (self.aacTable.item(i, j).text(),)
 
             if (temp != self.adminsLoaded[i]):
-                print(temp)
                 call = f'''UPDATE admin\n SET name = "{temp[1]}", login = "{temp[2]}", password = "{temp[3]}"\n WHERE id = {temp[0]}'''
                 self.cur.execute(call)
                 self.adminsLoaded[i] = temp
@@ -123,10 +133,23 @@ class MainProgram(QMainWindow):
         self.okAccsBtn.setDisabled(True)
         self.deAccsBtn.setDisabled(True)
 
-    # enables buttons for batch accounts add
-    def enable_batchAdd_buttons(self):
-        self.selectAAccType.setEnabled(True)
-        self.okButton_bAdd.setEnabled(True)
+    # controls buttons for batch accounts add
+    def control_batchAdd_buttons(self):
+        text = self.bAddField.toPlainText()
+        if text == '':
+            self.selectAAccType.setDisabled(True)
+            self.okButton_bAdd.setDisabled(True)
+        else:
+            self.selectAAccType.setEnabled(True)
+            self.okButton_bAdd.setEnabled(True)
+
+    # controls buttons for batch accounts delete
+    def control_batchDel_buttons(self):
+        text = self.bDelField.toPlainText()
+        if text == '':
+            self.okButton_bDel.setDisabled(True)
+        else:
+            self.okButton_bDel.setEnabled(True)
 
     def batchAdd(self):  # batch adding students, teachers and admins into DB
         from additional import key
@@ -135,7 +158,9 @@ class MainProgram(QMainWindow):
         role = self.selectAAccType.currentText()
 
         if role == '---':
-            return 0  # todo: ошибка
+            QMessageBox.critical(
+                self, "Ошибка ", "Выберите тип аккаунта")
+            return
 
         self.pAddBar.setMaximum(len(text))
         self.pAddBar.setValue(0)
@@ -168,12 +193,16 @@ class MainProgram(QMainWindow):
                     classes = '; '.join(classes)
 
                     if classes == '':
-                        break  # todo: ошибка
+                        QMessageBox.critical(
+                            self, "Ошибка ", "Задайте классы, в которых преподаёт учитель \nили поставьте прочерк")
+                        return
 
             except IndexError:
                 if role != 'Администратор':
-                    break
-                    pass  # todo: сообщение об ошибке
+                    QMessageBox.critical(
+                        self, "Ошибка ", "Проверьте введённые данные")
+                    return
+
             pwd = str(random.randint(100000, 999999))
 
             if role == 'Ученик':
@@ -225,8 +254,6 @@ class MainProgram(QMainWindow):
         self.con.commit()
         self.bAddField.setText('')
         self.pAddBar.hide()
-        self.selectAAccType.setDisabled(True)
-        self.okButton_bAdd.setDisabled(True)
 
     def batchDel(self):  # batch deleting students, teachers and admins from DB
         text = self.bDelField.toPlainText().rstrip('\n').split('\n')
@@ -243,7 +270,8 @@ class MainProgram(QMainWindow):
             elif i[0] == "a":
                 self.cur.execute("DELETE from admin where login = ?", (i,))
             else:
-                pass  # todo: ошибка
+                QMessageBox.critical(
+                    self, "Ошибка ", "Проверьте ведённые данные")
 
             progressBar_value += 1
             self.pDelBar.setValue(progressBar_value)
@@ -251,7 +279,57 @@ class MainProgram(QMainWindow):
         self.con.commit()
         self.bDelField.setText('')
         self.pDelBar.hide()
-        self.okButton_bDel.setDisabled(True)
+
+    # controls buttons for changing password
+    def control_changePassword_button(self):
+        if self.oldPassword.text() == '' or self.newPassword1.text() == '' or self.newPassword2.text() == '':
+            self.changePasswordButton.setDisabled(True)
+        else:
+            self.changePasswordButton.setEnabled(True)
+
+    def changePassword(self):
+        oldPassword = self.oldPassword.text()
+        newPassword1 = self.newPassword1.text()
+        newPassword2 = self.newPassword2.text()
+        role = self.login[0]
+        if role == 's':
+            checkPassword = self.cur.execute(
+                "SELECT password FROM student WHERE login = ?", (self.login, )).fetchone()[0]
+        elif role == 't':
+            checkPassword = self.cur.execute(
+                "SELECT password FROM teacher WHERE login = ?", (self.login, )).fetchone()[0]
+        elif role == 'a':
+            checkPassword = self.cur.execute(
+                "SELECT password FROM admin WHERE login = ?", (self.login,)).fetchone()[0]
+
+        if oldPassword != checkPassword:
+            QMessageBox.critical(
+                self, "Ошибка ", "Неверно введён старый пароль")
+            self.oldPassword.setText("")
+            return
+
+        if newPassword1 != newPassword2:
+            QMessageBox.critical(
+                self, "Ошибка ", "Новые пароли не совпадают")
+            self.newPassword1.setText("")
+            self.newPassword2.setText("")
+            return
+
+        if role == 's':
+            call = f'UPDATE student\nSET password = "{newPassword2}"\n WHERE login = "{self.login}"'
+        elif role == 't':
+            call = f'UPDATE teacher\nSET password = "{newPassword2}"\n WHERE login = "{self.login}"'
+        elif role == 'a':
+            call = f'UPDATE admin\nSET password = "{newPassword2}"\n WHERE login = "{self.login}"'
+
+        self.cur.execute(call)
+        self.con.commit()
+        QMessageBox.information(
+            self, "Успешно изменено!", f"Новый пароль: {newPassword1}")
+
+        self.oldPassword.setText("")
+        self.newPassword1.setText("")
+        self.newPassword2.setText("")
 
 
 class LoginDialog(QDialog):

@@ -132,7 +132,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>83</width>
+             <width>96</width>
              <height>82</height>
             </rect>
            </property>
@@ -150,7 +150,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>83</width>
+             <width>96</width>
              <height>82</height>
             </rect>
            </property>
@@ -168,7 +168,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>83</width>
+             <width>96</width>
              <height>82</height>
             </rect>
            </property>
@@ -186,7 +186,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>83</width>
+             <width>96</width>
              <height>82</height>
             </rect>
            </property>
@@ -204,7 +204,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>83</width>
+             <width>96</width>
              <height>82</height>
             </rect>
            </property>
@@ -412,7 +412,7 @@
         <item>
          <widget class="QTabWidget" name="control">
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <property name="documentMode">
            <bool>false</bool>
@@ -638,7 +638,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="newPassword">
+               <widget class="QLineEdit" name="newPassword1">
                 <property name="echoMode">
                  <enum>QLineEdit::Password</enum>
                 </property>
@@ -666,6 +666,9 @@
             </item>
             <item>
              <widget class="QPushButton" name="changePasswordButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>Применить</string>
               </property>
