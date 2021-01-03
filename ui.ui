@@ -94,7 +94,7 @@
     <item>
      <widget class="QTabWidget" name="viewMode">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="timetable">
        <property name="enabled">
@@ -105,7 +105,7 @@
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QToolBox" name="toolBox_2">
+         <widget class="QToolBox" name="dayChoose">
           <property name="currentIndex">
            <number>0</number>
           </property>
@@ -114,7 +114,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>837</width>
+             <width>823</width>
              <height>308</height>
             </rect>
            </property>
@@ -123,7 +123,23 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_7">
             <item>
-             <widget class="QTableWidget" name="tableWidget_2"/>
+             <widget class="QTableWidget" name="mon_table">
+              <column>
+               <property name="text">
+                <string>Название</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Домашнее задание</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Учитель</string>
+               </property>
+              </column>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -132,8 +148,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>96</width>
-             <height>82</height>
+             <width>823</width>
+             <height>308</height>
             </rect>
            </property>
            <attribute name="label">
@@ -141,7 +157,23 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_8">
             <item>
-             <widget class="QTableWidget" name="tableWidget_3"/>
+             <widget class="QTableWidget" name="tue_table">
+              <column>
+               <property name="text">
+                <string>Название</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Домашнее задание</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Учитель</string>
+               </property>
+              </column>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -150,8 +182,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>96</width>
-             <height>82</height>
+             <width>823</width>
+             <height>308</height>
             </rect>
            </property>
            <attribute name="label">
@@ -159,7 +191,23 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_12">
             <item>
-             <widget class="QTableWidget" name="tableWidget_4"/>
+             <widget class="QTableWidget" name="wed_table">
+              <column>
+               <property name="text">
+                <string>Название</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Домашнее задание</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Учитель</string>
+               </property>
+              </column>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -168,8 +216,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>96</width>
-             <height>82</height>
+             <width>823</width>
+             <height>308</height>
             </rect>
            </property>
            <attribute name="label">
@@ -177,7 +225,23 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_9">
             <item>
-             <widget class="QTableWidget" name="tableWidget_5"/>
+             <widget class="QTableWidget" name="thu_table">
+              <column>
+               <property name="text">
+                <string>Название</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Домашнее задание</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Учитель</string>
+               </property>
+              </column>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -186,8 +250,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>96</width>
-             <height>82</height>
+             <width>823</width>
+             <height>308</height>
             </rect>
            </property>
            <attribute name="label">
@@ -195,7 +259,23 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_10">
             <item>
-             <widget class="QTableWidget" name="tableWidget_6"/>
+             <widget class="QTableWidget" name="fri_table">
+              <column>
+               <property name="text">
+                <string>Название</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Домашнее задание</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Учитель</string>
+               </property>
+              </column>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -204,8 +284,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>96</width>
-             <height>82</height>
+             <width>823</width>
+             <height>308</height>
             </rect>
            </property>
            <attribute name="label">
@@ -213,18 +293,51 @@
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_11">
             <item>
-             <widget class="QTableWidget" name="tableWidget_7"/>
+             <widget class="QTableWidget" name="sat_table">
+              <column>
+               <property name="text">
+                <string>Название</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Домашнее задание</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>Учитель</string>
+               </property>
+              </column>
+             </widget>
             </item>
            </layout>
           </widget>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton">
-          <property name="text">
-           <string>Ок</string>
+         <layout class="QVBoxLayout" name="verticalLayout_14">
+          <property name="rightMargin">
+           <number>0</number>
           </property>
-         </widget>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="okTableButton">
+            <property name="text">
+             <string>Применить</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="addLesson">
+            <property name="text">
+             <string>Добавить урок</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -584,8 +697,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>400</width>
-             <height>400</height>
+             <width>226</width>
+             <height>125</height>
             </rect>
            </property>
            <property name="sizePolicy">
