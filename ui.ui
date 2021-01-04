@@ -14,12 +14,28 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Электронный дневник</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLabel" name="loginInformation">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>test</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
       <item>
        <widget class="QComboBox" name="classChoose">
         <property name="sizePolicy">
@@ -94,7 +110,7 @@
     <item>
      <widget class="QTabWidget" name="viewMode">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="timetable">
        <property name="enabled">
@@ -114,8 +130,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>823</width>
-             <height>308</height>
+             <width>96</width>
+             <height>82</height>
             </rect>
            </property>
            <attribute name="label">
@@ -148,8 +164,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>823</width>
-             <height>308</height>
+             <width>96</width>
+             <height>82</height>
             </rect>
            </property>
            <attribute name="label">
@@ -182,8 +198,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>823</width>
-             <height>308</height>
+             <width>96</width>
+             <height>82</height>
             </rect>
            </property>
            <attribute name="label">
@@ -216,8 +232,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>823</width>
-             <height>308</height>
+             <width>96</width>
+             <height>82</height>
             </rect>
            </property>
            <attribute name="label">
@@ -250,8 +266,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>823</width>
-             <height>308</height>
+             <width>96</width>
+             <height>82</height>
             </rect>
            </property>
            <attribute name="label">
@@ -284,8 +300,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>823</width>
-             <height>308</height>
+             <width>96</width>
+             <height>82</height>
             </rect>
            </property>
            <attribute name="label">
@@ -353,11 +369,21 @@
          <widget class="QTableWidget" name="marksTable"/>
         </item>
         <item>
-         <widget class="QPushButton" name="pushButton_2">
-          <property name="text">
-           <string>Ок</string>
+         <layout class="QVBoxLayout" name="verticalLayout_15">
+          <property name="leftMargin">
+           <number>0</number>
           </property>
-         </widget>
+          <item>
+           <widget class="QComboBox" name="teacherSubject"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="marks_okButton">
+            <property name="text">
+             <string>Применить</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>

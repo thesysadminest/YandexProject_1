@@ -18,15 +18,14 @@ class MainProgram(QMainWindow):
         self.timetable, self.teachersIds, self.lessonsIds = {}, {}, {}
         self.teachersLoaded, self.studentsLoaded, self.adminsLoaded = [], [], []
 
-        self.handle()
         self.loadLessonsTeachersIds()
+        self.setLoginInfo()
 
         if datetime.date.today().weekday() == 6:
             self.dateChoose.setDate(
                 datetime.date.today() + datetime.timedelta(1))
         else:
             self.dateChoose.setDate(datetime.date.today())
-
         self.dateChoose.dateChanged.connect(self.currentDateTimetable_changed)
         self.dayChoose.setCurrentIndex(datetime.date.today().weekday())
         self.dayChoose.currentChanged.connect(self.currentDayTimetable_changed)
@@ -41,10 +40,11 @@ class MainProgram(QMainWindow):
         self.newPassword2.textChanged.connect(
             self.control_changePassword_button)
 
+        self.handle()
         self.loadTimetable()
 
-        # a = QTableWidget(self)
-        # a.keyPressEvent(Qt.Key_Delete).connect()
+        # a = QComboBox(self)
+        # a.
 
     def handle(self):
         if self.login[0] == 's':
@@ -59,13 +59,22 @@ class MainProgram(QMainWindow):
             classes = classes[0].split('; ')
             self.classChoose.addItems(classes)
             self.okTableButton.clicked.connect(self.teacher_commitTableChanges)
+            self.teacher_loadsubjects()
+            self.teacher_loadMarks()
+            self.teacherSubject.currentTextChanged.connect(
+                self.teacher_loadMarks)
+
+            def temp():
+                self.loadTimetable()
+                self.teacher_loadsubjects()
+                self.teacher_loadMarks()
+            self.classChoose.currentTextChanged.connect(temp)
 
         else:
             classes1 = self.cur.execute(
                 "SELECT DISTINCT class, class_letter FROM student").fetchall()
             classes2 = self.cur.execute(
                 "SELECT DISTINCT class FROM timetable").fetchall()
-            print(classes2)
             classes2 = [(int(i[0][:-1]), i[0][-1]) for i in classes2]
             classes = sorted(classes1 + classes2)
             classes = [str(i[0]) + str(i[1]) for i in classes]
@@ -94,7 +103,26 @@ class MainProgram(QMainWindow):
 
             self.loadAccs()
 
-    def loadLessonsTeachersIds(self):
+    def setLoginInfo(self):  # sets login information
+        def make_call(table):
+            call = f"SELECT name FROM {table} WHERE login = '{self.login}'"
+            name = self.cur.execute(call).fetchall()[0][0]
+            return name
+        role = self.login[0]
+        fullRole = ''
+        if role == 's':
+            name = make_call('student')
+            fullRole = 'Ученик'
+        elif role == 't':
+            name = make_call('teacher')
+            fullRole = 'Учитель'
+        else:
+            name = make_call('admin')
+            fullRole = 'Администратор'
+
+        self.loginInformation.setText(f"{fullRole}: {name} ({self.login})")
+
+    def loadLessonsTeachersIds(self):  # loading lessons and teachers ids
         temp_teachers = self.cur.execute("SELECT * FROM teacher").fetchall()
         temp_lessons = self.cur.execute("SELECT * FROM lesson").fetchall()
         for i in temp_lessons:
@@ -102,14 +130,96 @@ class MainProgram(QMainWindow):
         for i in temp_teachers:
             self.teachersIds[i[0]] = i[1]
 
-    def currentDayTimetable_changed(self):
+    def teacher_loadsubjects(self):
+        currentName = self.cur.execute(
+            "SELECT name FROM teacher WHERE login = ?", (self.login,)).fetchone()[0]
+        currentClass = self.classChoose.currentText()
+        for i in self.teachersIds:
+            if self.teachersIds[i] == currentName:
+                currentName = i
+                break
+
+        subjects = self.cur.execute("""SELECT DISTINCT lesson FROM timetable \
+            WHERE class = ? AND teacher = ? ORDER BY lesson""",
+                                    (currentClass, currentName)).fetchall()
+
+        try:
+            subjects = [self.lessonsIds[i[0]] for i in subjects]
+        except Exception:
+            return
+
+        self.teacherSubject.clear()
+        self.teacherSubject.addItems(subjects)
+
+    def teacher_loadMarks(self):
+        date = self.dateChoose.text().split('.')
+        dateEnd = datetime.date(int(date[2]), int(date[1]), int(date[0]))
+        dateBegin = dateEnd - datetime.timedelta(30)
+        currentName = self.cur.execute(
+            "SELECT name FROM teacher WHERE login = ?", (self.login,)).fetchone()[0]
+        currentClass = self.classChoose.currentText()
+        for i in self.teachersIds.keys():
+            if self.teachersIds[i] == currentName:
+                currentName = i
+                break
+        currentLesson = self.teacherSubject.currentText()
+        for i in self.lessonsIds.keys():
+            if self.lessonsIds[i] == currentLesson:
+                currentLesson = i
+                break
+
+        temp_timetable = self.cur.execute(
+            """SELECT id, day FROM timetable WHERE teacher = ? AND class = ? AND lesson = ?\
+                 AND day BETWEEN ? AND ? ORDER BY day""",
+            (currentName, currentClass, currentLesson, dateBegin, dateEnd)).fetchall()
+
+        self.marks = []
+        for i in temp_timetable:
+            result = self.cur.execute(
+                "SELECT * FROM marks WHERE id_timetable = ?", (i[0],)).fetchall()
+            self.marks.append([i[1], result])
+
+        self.marksStudents = self.cur.execute(
+            "SELECT id, name FROM student WHERE class = ? AND class_letter = ? ORDER BY name",
+            (int(currentClass[:-1]), currentClass[-1])).fetchall()
+        self.marksStudents = {(self.marksStudents[i][0], self.marksStudents[i][1]): i for i in range(
+            len(self.marksStudents))}
+
+        temp1 = [i[0] for i in self.marks]
+        temp2 = [i[1] for i in self.marksStudents.keys()]
+        self.marksTable.clear()
+        self.marksTable.setRowCount(len(temp2))
+        self.marksTable.setColumnCount(len(temp1))
+        self.marksTable.setHorizontalHeaderLabels(temp1)
+        self.marksTable.setVerticalHeaderLabels(temp2)
+        self.marksTable.resizeColumnsToContents()
+        self.marksTable.resizeRowsToContents()
+        for i in range(len(self.marks)):
+            for j in self.marks[i][1]:
+                if len(j) > 1:
+                    for r in self.marksStudents:
+                        if r[0] == j[1]:
+                            self.marksTable.setItem(
+                                self.marksStudents[r], i, QTableWidgetItem(str(j[2])))
+                            break
+
+    # # def teacher_commitMarksChanges(self):
+    #     self.students = {i[0]: self.students[i] for i in self.students.keys()}
+    #     for i in self.marks:
+    #         self.marks[i].append(self.students[self.marks[i][1]])
+
+    #     for i in range(self.marksTable.columnCount()):
+    #         for j in range(self.marksTable.rowCount()):
+    #             pass
+
+    def currentDayTimetable_changed(self):  # when day is changed
         date = self.dateChoose.text().split('.')
         dateFormatted = datetime.date(int(date[2]), int(date[1]), int(date[0]))
         dateFormatted -= datetime.timedelta(dateFormatted.weekday())
         dateFormatted += datetime.timedelta(self.dayChoose.currentIndex())
         self.dateChoose.setDate(dateFormatted)
 
-    def currentDateTimetable_changed(self):
+    def currentDateTimetable_changed(self):  # when timetable weekday changed
         date = self.dateChoose.text().split('.')
         dateFormatted = datetime.date(int(date[2]), int(date[1]), int(date[0]))
         if dateFormatted.weekday() == 6:
@@ -124,7 +234,7 @@ class MainProgram(QMainWindow):
         self.dateChoose.setDate(dateFormatted)
         self.loadTimetable()
 
-    def addTimetableLesson(self):
+    def addTimetableLesson(self):  # adds lesson into timetable
         def addRow(table):
             table.setRowCount(table.rowCount() + 1)
 
@@ -143,7 +253,7 @@ class MainProgram(QMainWindow):
         elif index == 5:
             addRow(self.sat_table)
 
-    def admin_commitTableChanges(self):
+    def admin_commitTableChanges(self):  # admin: applies timetable changes
         date = self.dateChoose.text().split('.')
         currentClass = self.classChoose.currentText()
         dateFormatted = datetime.date(int(date[2]), int(date[1]), int(date[0]))
@@ -163,20 +273,22 @@ class MainProgram(QMainWindow):
                 try:
                     lesson_name = table[r].item(
                         i, 0).text().rstrip(' ').lstrip(' ').lower()
-                    homework_name = table[r].item(
-                        i, 1).text().rstrip(' ').lstrip(' ')
                     teacher_name = table[r].item(
                         i, 2).text().rstrip(' ').lstrip(' ').lower()
                 except AttributeError:
                     continue
+                try:
+                    homework_name = table[r].item(
+                        i, 1).text().rstrip(' ').lstrip(' ')
+                except AttributeError:
+                    homework_name = ''
 
                 if lesson_name == '' or teacher_name == '':
                     try:
                         self.cur.execute(
                             'DELETE FROM timetable WHERE id = ?', (temp_day[i][0], ))
                         self.con.commit()
-                    except KeyboardInterrupt:
-                        print(temp_day)
+                    except Exception:
                         pass
                     continue
 
@@ -202,8 +314,6 @@ class MainProgram(QMainWindow):
                              VALUES ('{dateFormatted.isoformat()}', '{currentClass}', {len(temp_day) + 1},
                                  {lesson_id}, {teacher_id}, '{homework_name}')"""
                     temp_day.append(tuple())
-
-                    print(call)
                     self.cur.execute(call)
                     self.con.commit()
                     continue
@@ -221,7 +331,7 @@ class MainProgram(QMainWindow):
         QMessageBox.information(
             self, "Успеx!", "Данные успешно внесены в таблицу!")
 
-    def teacher_commitTableChanges(self):
+    def teacher_commitTableChanges(self):  # teacher: applies timetable changes
         date = self.dateChoose.text().split('.')
         currentClass = self.classChoose.currentText()
         dateFormatted = datetime.date(int(date[2]), int(date[1]), int(date[0]))
@@ -245,7 +355,7 @@ class MainProgram(QMainWindow):
                     i, 1).text().rstrip(' ').lstrip(' ')
                 teacher_name = temp_day[i][3]
 
-                if teacher_name != current_name:
+                if teacher_name.lower() != current_name:
                     continue
 
                 if homework_name != temp_day[i][4]:
@@ -259,7 +369,7 @@ class MainProgram(QMainWindow):
         QMessageBox.information(
             self, "Успеx!", "Данные успешно внесены в таблицу!")
 
-    def loadTimetable(self):
+    def loadTimetable(self):  # loads timetable
         isEmpty = False
         currentClass = self.classChoose.currentText()
         currentDate = self.dateChoose.text().split('.')
@@ -277,7 +387,6 @@ class MainProgram(QMainWindow):
                            self.teachersIds[i[3]], i[4]) for i in currentDay]
             self.timetable[(currentClass, currentDate)] = currentDay
         temp = self.dayChoose.currentIndex()
-        print(self.timetable, '\n')
 
         def fillTable(table):
             if isEmpty:
